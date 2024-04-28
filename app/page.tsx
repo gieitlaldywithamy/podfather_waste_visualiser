@@ -6,11 +6,11 @@ import { useQuery } from "convex/react";
 import { Loading, SearchableTable, wasteTableColumns as wasteColumns } from "./features";
 
 export default function Home() {
-  const waste = useQuery(api.waste.getWaste);
+  const wasteData = useQuery(api.waste.getWaste);
   
   return (
     <main className="flex min-h-screen flex-col items-center justify-between px-12 py-2">
-        {!waste ? <Loading />: <SearchableTable data={waste} columns={wasteColumns} />}
+        {!wasteData ? <Loading />: <SearchableTable data={wasteData} columns={wasteColumns} />}
     </main>
   );
 }

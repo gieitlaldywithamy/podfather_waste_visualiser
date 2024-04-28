@@ -39,6 +39,10 @@ export function SearchableTable<TData, TValue>({
   const [userFilter, setUserFilter] = useState("");
   const [rowSelection, setRowSelection] = useState<RowSelectionState>({});
 
+  const router = useRouter();
+  const pathname = usePathname();
+  const searchParams = useSearchParams();
+
   const table = useReactTable({
     data,
     columns,
@@ -56,16 +60,25 @@ export function SearchableTable<TData, TValue>({
     onGlobalFilterChange: setUserFilter,
   });
 
+  const goToVisualiser = () => {
+    const current = new URLSearchParams(Array.from(searchParams.entries()));
+    const search = current.toString();
+    const query = search ? `?${search}` : "";
+    router.push(`/graph${query}`);
+  };
+
   return (
     <div className="w-full">
-      <div className="flex items-center py-4">
+      <div className="flex space-between items-center py-4">
         <Input
           placeholder="Search..."
           value={userFilter}
           onChange={(e) => setUserFilter(e.target.value)}
           className="max-w-sm"
         />
+        <Button variant="link" onClick={goToVisualiser} >Compare selected rows</Button>
       </div>
+      
       <div className="rounded-md border">
         <Table>
           <TableHeader>
