@@ -12,6 +12,25 @@ import {
 } from "@tremor/react";
 import { useSearchParams } from "next/navigation";
 import { Loading } from "../features";
+import { WasteCard } from "../features/card";
+
+type CustomTooltipTypeBar = {
+  payload: any;
+  active: boolean | undefined;
+  label: any;
+};
+
+const customTooltip = (props: CustomTooltipTypeBar) => {
+  const { payload, active } = props;
+  if (!active || !payload) return null;
+
+  return (
+    <div className="w-56 rounded-tremor-default border border-tremor-border bg-white p-2 text-tremor-default shadow-tremor-dropdown">
+      <WasteCard {...payload[0].payload} />
+    </div>
+  );
+};
+
 
 export default function Home() {
   const waste = useQuery(api.waste.getWaste);
@@ -32,46 +51,12 @@ export default function Home() {
         categories={["estimatedKg", "actualKg"]}
         colors={["slate", "violet"]}
         yAxisWidth={48}
+        customTooltip={customTooltip}
       />
       <div className="grid gap-4 md:grid-cols-3 grid-flow-row">
         {waste.map(
-          ({
-            _id,
-            customer,
-            wasteType,
-            month,
-            year,
-            site,
-            estimatedKg,
-            actualKg,
-          }) => (
-            <Card key={_id} className="mx-auto" decoration="top" decorationColor="gray">
-              <Title className="mb-2 text-bold">{customer}</Title>
-              <p className="text-tremor-default text-tremor-content dark:text-dark-tremor-content flex items-center justify-between">
-                <span className="italic">Actual {actualKg}kg</span>
-                <span className="italic">Estimated {estimatedKg}kg</span>
-              </p>
-              <ProgressBar
-                value={Math.ceil((actualKg / estimatedKg) * 100)}
-                color="green"
-                className="mt-3"
-              />
-              <span>{Math.ceil((actualKg / estimatedKg) * 100)} % </span>
-              <List>
-                <ListItem>
-                  <span>Waste Type:</span>
-                  <span>{wasteType}</span>
-                </ListItem>
-                <ListItem>
-                  <span>Date:</span>
-                  <span>{`${month}/${year}`}</span>
-                </ListItem>
-                <ListItem>
-                  <span>Site:</span>
-                  <span>{site}</span>
-                </ListItem>
-              </List>
-            </Card>
+          (waste) => (
+            <WasteCard key={waste._id} className="mx-auto" decoration="top" decorationColor="gray" {...waste} />
           )
         )}
       </div>
