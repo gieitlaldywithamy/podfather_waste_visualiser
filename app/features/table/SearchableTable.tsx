@@ -62,21 +62,24 @@ export function SearchableTable<TData, TValue>({
 
   const goToVisualiser = () => {
     const current = new URLSearchParams(Array.from(searchParams.entries()));
+    current.set("ids", Object.keys(rowSelection).join('&'));
     const search = current.toString();
+    
+    console.log({rowSelection});
     const query = search ? `?${search}` : "";
     router.push(`/graph${query}`);
   };
 
   return (
     <div className="w-full">
-      <div className="flex space-between items-center py-4">
+      <div className="flex justify-between items-center py-4">
         <Input
           placeholder="Search..."
           value={userFilter}
           onChange={(e) => setUserFilter(e.target.value)}
           className="max-w-sm"
         />
-        <Button variant="link" onClick={goToVisualiser} >Compare selected rows</Button>
+        <Button variant="link" onClick={goToVisualiser} >{`Compare ${Object.keys(rowSelection)?.length === 0 ? 'all': `${Object.keys(rowSelection)?.length} selected`} rows`}</Button>
       </div>
       
       <div className="rounded-md border">

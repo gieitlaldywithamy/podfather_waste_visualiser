@@ -62,17 +62,19 @@ const GraphFilter: React.FC<GraphFilterProps> = ({ onChange, placeholder, filter
 };
 
 export default function Home() {
+
   const [customerFilter, setCustomerFilter] = useState(undefined);
 
   const waste = useQuery(api.waste.getWaste);
-  const searchParams = useSearchParams();
-
   
-
+  const searchParams = useSearchParams();
   const search = searchParams.get("ids");
-  const ids = search?.split("&");
+  const ids = search ? search.split("&") : undefined;
 
-  const wasteToGraph = customerFilter ? waste?.filter(waste => waste.customer === customerFilter) : waste;
+  // TODo user should be able to filter customer and by id, this is confusing/very bad!
+
+  const wasteToGraph = customerFilter ? waste?.filter(waste => waste.customer === customerFilter) : (
+    ids && ids?.length > 0 ? waste?.filter(wasteRow => ids?.indexOf(wasteRow?._id) > -1) : waste);
 
   if (!waste) return <Loading />;
 
@@ -81,7 +83,7 @@ export default function Home() {
 
   return (
     <div className="p-6">
-      <GraphFilter filterValue={customerFilter} onChange={setCustomerFilter} placeholder="Filter By Customer" filterValues={customerValues}/>
+      {!ids && <GraphFilter filterValue={customerFilter} onChange={setCustomerFilter} placeholder="Filter By Customer" filterValues={customerValues}/>}
       {wasteToGraph && (<BarChart
         className="mt-6"
         data={wasteToGraph}
